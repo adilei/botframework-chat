@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Components, createDirectLine } from 'botframework-webchat';
 import { getDirectLineToken } from './utils/token';
-import { styleOptions } from './styles/theme';
 import ChatPage from './components/ChatPage';
 import './styles/global.css';
 
@@ -46,7 +45,7 @@ function App() {
   }
 
   return (
-    <Composer directLine={directLine} styleOptions={styleOptions}>
+    <Composer directLine={directLine}>
       <ChatPage />
     </Composer>
   );

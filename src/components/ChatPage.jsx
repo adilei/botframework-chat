@@ -1,8 +1,8 @@
-import { Components } from 'botframework-webchat';
 import Header from './Header';
 import Footer from './Footer';
-
-const { BasicTranscript, BasicSendBox, BasicToaster } = Components;
+import ChatTranscript from './ChatTranscript';
+import SendBox from './SendBox';
+import TypingIndicator from './TypingIndicator';
 
 function ChatPage() {
   return (
@@ -11,13 +11,13 @@ function ChatPage() {
 
       <main className="chat-main">
         <div className="chat-container">
-          <BasicToaster />
-          <BasicTranscript />
+          <ChatTranscript />
+          <TypingIndicator />
         </div>
       </main>
 
       <div className="sendbox-wrapper">
-        <BasicSendBox placeholder="How can I help? Ask me anything" />
+        <SendBox placeholder="How can I help? Ask me anything" />
       </div>
 
       <Footer />
