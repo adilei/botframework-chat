@@ -183,6 +183,27 @@ const { useSendMessage } = hooks;     // Send a message to the bot
 const { useActiveTyping } = hooks;    // Detect when bot is typing
 ```
 
+## Connection Modes
+
+The app supports two connection modes:
+
+### Direct Line (Default)
+```
+http://localhost:5173/
+```
+- Uses Direct Line token endpoint
+- No streaming - messages appear when complete
+- Simpler setup, no Azure app registration required
+
+### M365 Agents SDK (Streaming)
+```
+http://localhost:5173/?m365
+```
+- Uses `@microsoft/agents-copilotstudio-client`
+- **Real-time streaming** - text appears as it's generated
+- Requires Azure app registration with `CopilotStudio.Copilots.Invoke` permission
+- MSAL popup authentication
+
 ## Setup
 
 1. Clone the repository
@@ -190,9 +211,16 @@ const { useActiveTyping } = hooks;    // Detect when bot is typing
    ```bash
    npm install
    ```
-3. Create `.env` file with your token endpoint:
-   ```
-   VITE_TOKEN_ENDPOINT=https://your-pva-endpoint/directline/token
+3. Create `.env` file:
+   ```bash
+   # Direct Line mode
+   VITE_TOKEN_ENDPOINT=https://your-environment.api.powerplatform.com/.../directline/token
+
+   # M365 SDK mode (for streaming)
+   VITE_ENVIRONMENT_ID=your-environment-id
+   VITE_AGENT_IDENTIFIER=your-agent-schema-name
+   VITE_TENANT_ID=your-azure-tenant-id
+   VITE_APP_CLIENT_ID=your-azure-app-client-id
    ```
 4. Start development server:
    ```bash
