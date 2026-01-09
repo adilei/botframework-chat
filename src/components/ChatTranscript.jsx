@@ -4,6 +4,11 @@ import Markdown from 'react-markdown';
 
 const { useActivities } = hooks;
 
+// Convert HTML line breaks to newlines for markdown rendering
+function normalizeText(text) {
+  return text?.replace(/<br\s*\/?>/gi, '\n') || '';
+}
+
 function ChatTranscript() {
   const [activities] = useActivities();
   const endRef = useRef(null);
@@ -99,7 +104,7 @@ function ChatTranscript() {
                     ),
                   }}
                 >
-                  {msg.text}
+                  {normalizeText(msg.text)}
                 </Markdown>
               </div>
             </div>
@@ -116,7 +121,7 @@ function ChatTranscript() {
                     ),
                   }}
                 >
-                  {streamingText}
+                  {normalizeText(streamingText)}
                 </Markdown>
                 <span className="streaming-cursor" />
               </div>

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { hooks } from 'botframework-webchat';
 
 const { useActivities, useActiveTyping } = hooks;
@@ -6,20 +7,33 @@ function TypingIndicator() {
   const [activeTyping] = useActiveTyping();
   const [activities] = useActivities();
 
-  // Check if bot is typing
-  const botTyping = Object.values(activeTyping || {}).some(
-    typing => typing.role === 'bot'
-  );
+  const showTyping = useMemo(() => {
+    // Check if bot is actively typing
+    const botTyping = Object.values(activeTyping || {}).some(
+      typing => typing.role === 'bot'
+    );
 
-  // Check if we have streaming content (handled by ChatTranscript)
-  const hasStreamingContent = activities.some(activity =>
-    activity.type === 'typing' &&
-    activity.from?.role === 'bot' &&
-    (activity.channelData?.chunks || activity.channelData?.streamingText || activity.text)
-  );
+    if (!botTyping) return false;
 
-  // Only show dots if bot is typing but no streaming content
-  if (!botTyping || hasStreamingContent) {
+    // Check if there's active streaming (don't show dots during streaming)
+    const finalStreamIds = new Set();
+    activities.forEach(activity => {
+      if (activity.type === 'message' && activity.channelData?.streamType === 'final') {
+        finalStreamIds.add(activity.channelData.streamId);
+      }
+    });
+
+    const hasActiveStreaming = activities.some(activity =>
+      activity.type === 'typing' &&
+      activity.channelData?.chunkType === 'delta' &&
+      activity.channelData?.streamId &&
+      !finalStreamIds.has(activity.channelData.streamId)
+    );
+
+    return !hasActiveStreaming;
+  }, [activeTyping, activities]);
+
+  if (!showTyping) {
     return null;
   }
 
