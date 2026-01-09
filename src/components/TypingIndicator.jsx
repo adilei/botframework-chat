@@ -1,16 +1,25 @@
 import { hooks } from 'botframework-webchat';
 
-const { useActiveTyping } = hooks;
+const { useActivities, useActiveTyping } = hooks;
 
 function TypingIndicator() {
   const [activeTyping] = useActiveTyping();
+  const [activities] = useActivities();
 
-  // Check if bot is typing (filter out user typing)
+  // Check if bot is typing
   const botTyping = Object.values(activeTyping || {}).some(
     typing => typing.role === 'bot'
   );
 
-  if (!botTyping) {
+  // Check if we have streaming content (handled by ChatTranscript)
+  const hasStreamingContent = activities.some(activity =>
+    activity.type === 'typing' &&
+    activity.from?.role === 'bot' &&
+    (activity.channelData?.chunks || activity.channelData?.streamingText || activity.text)
+  );
+
+  // Only show dots if bot is typing but no streaming content
+  if (!botTyping || hasStreamingContent) {
     return null;
   }
 
