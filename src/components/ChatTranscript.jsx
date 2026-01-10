@@ -123,7 +123,7 @@ function ChatTranscript() {
     }
   }, [isAtBottom]);
 
-  const debouncedScroll = useDebounce(scrollToBottomInstant, 150);
+  const debouncedScroll = useDebounce(scrollToBottomInstant, 50);
 
   // Auto-scroll during streaming (debounced, instant, only if at bottom)
   useEffect(() => {
