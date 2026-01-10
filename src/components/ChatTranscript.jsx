@@ -115,19 +115,22 @@ function ChatTranscript() {
     return () => container.removeEventListener('scroll', handleScroll);
   }, [checkIfAtBottom]);
 
-  // Debounced scroll function (20ms delay)
-  const scrollToBottom = useCallback(() => {
-    if (isAtBottom) {
-      endRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // Instant scroll during streaming (no animation to avoid jitter)
+  const scrollToBottomInstant = useCallback(() => {
+    const container = containerRef.current;
+    if (container && isAtBottom) {
+      container.scrollTop = container.scrollHeight;
     }
   }, [isAtBottom]);
 
-  const debouncedScroll = useDebounce(scrollToBottom, 20);
+  const debouncedScroll = useDebounce(scrollToBottomInstant, 150);
 
-  // Auto-scroll when new content arrives (debounced, only if at bottom)
+  // Auto-scroll during streaming (debounced, instant, only if at bottom)
   useEffect(() => {
-    debouncedScroll();
-  }, [messages.length, streamingText, debouncedScroll]);
+    if (streamingText) {
+      debouncedScroll();
+    }
+  }, [streamingText, debouncedScroll]);
 
   // Always scroll to bottom on new user/bot message (not during streaming)
   useEffect(() => {
