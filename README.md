@@ -12,7 +12,7 @@ When building a custom chat UI for Copilot Studio, there are three main options:
 | **Fully Custom UI** | Complete control | Must reimplement connection handling, activity management, typing indicators, streaming, etc. |
 | **Composer + Hooks** | Full styling control + WebChat handles the hard parts | Requires understanding the hooks API |
 
-This project uses **Composer + Hooks** - we get complete control over the UI while WebChat manages Direct Line connections, activity state, and the messaging protocol. Best of both worlds.
+This project uses **Composer + Hooks** - we get complete control over the UI while WebChat manages connections (Direct Line or M365 Agents SDK), activity state, and the messaging protocol. Best of both worlds.
 
 ## Quick Start
 
