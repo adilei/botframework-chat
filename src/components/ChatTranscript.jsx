@@ -1,9 +1,10 @@
 import { useEffect, useRef, useMemo, useCallback, useState } from 'react';
 import { hooks } from 'botframework-webchat';
 import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import MessageAttachments from './MessageAttachments';
 
-const { useActivities } = hooks;
+const { useActivities, useSendMessage } = hooks;
 
 // Convert HTML line breaks to newlines for markdown rendering
 function normalizeText(text) {
@@ -26,19 +27,26 @@ function useDebounce(callback, delay) {
 
 function ChatTranscript() {
   const [activities] = useActivities();
+  const sendMessage = useSendMessage();
   const containerRef = useRef(null);
   const endRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
 
-  const { messages, streamingText } = useMemo(() => {
+  const { messages, streamingText, suggestedActions } = useMemo(() => {
     const finalMessages = [];
     const finalStreamIds = new Set();
     const streamingChunks = new Map(); // streamId -> sorted chunks
+    let lastSuggestedActions = null;
 
     // First pass: identify final messages and collect streaming chunks
     activities.forEach(activity => {
       const streamType = activity.channelData?.streamType;
       const streamId = activity.channelData?.streamId;
+
+      // Track suggested actions from bot messages
+      if (activity.from?.role === 'bot' && activity.suggestedActions?.actions?.length) {
+        lastSuggestedActions = activity.suggestedActions.actions;
+      }
 
       // Final bot messages (streaming mode)
       if (activity.type === 'message' && streamType === 'final') {
@@ -61,6 +69,8 @@ function ChatTranscript() {
           timestamp: activity.timestamp,
           attachments: activity.attachments || [],
         });
+        // Clear suggested actions when user sends a message
+        lastSuggestedActions = null;
       }
       // Bot messages without streaming (Direct Line mode)
       else if (
@@ -107,8 +117,16 @@ function ChatTranscript() {
     return {
       messages: finalMessages,
       streamingText: currentStreamingText,
+      suggestedActions: lastSuggestedActions,
     };
   }, [activities]);
+
+  // Handle suggested action click
+  const handleSuggestedAction = useCallback((action) => {
+    if (action.type === 'imBack' || action.type === 'postBack') {
+      sendMessage(action.value || action.title);
+    }
+  }, [sendMessage]);
 
   // Check if user is at (or near) the bottom of the scroll container
   const checkIfAtBottom = useCallback(() => {
@@ -153,7 +171,9 @@ function ChatTranscript() {
   // Always scroll to bottom on new user/bot message (not during streaming)
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
-    setIsAtBottom(true);
+    // Reset isAtBottom after scroll animation completes
+    const timer = setTimeout(() => setIsAtBottom(true), 300);
+    return () => clearTimeout(timer);
   }, [messages.length]);
 
   return (
@@ -172,6 +192,7 @@ function ChatTranscript() {
               <div className="message__bubble">
                 {msg.text && (
                   <Markdown
+                    remarkPlugins={[remarkGfm]}
                     components={{
                       a: ({ href, children }) => (
                         <a href={href} target="_blank" rel="noopener noreferrer">
@@ -194,6 +215,7 @@ function ChatTranscript() {
             <div className="message message--bot message--streaming">
               <div className="message__bubble">
                 <Markdown
+                  remarkPlugins={[remarkGfm]}
                   components={{
                     a: ({ href, children }) => (
                       <a href={href} target="_blank" rel="noopener noreferrer">
@@ -206,6 +228,19 @@ function ChatTranscript() {
                 </Markdown>
                 <span className="streaming-cursor" />
               </div>
+            </div>
+          )}
+          {suggestedActions && suggestedActions.length > 0 && !streamingText && (
+            <div className="suggested-actions">
+              {suggestedActions.map((action, index) => (
+                <button
+                  key={index}
+                  className="suggested-action"
+                  onClick={() => handleSuggestedAction(action)}
+                >
+                  {action.title}
+                </button>
+              ))}
             </div>
           )}
         </>

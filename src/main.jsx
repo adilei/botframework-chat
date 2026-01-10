@@ -2,13 +2,23 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import AppM365 from './AppM365.jsx'
+import AppDemo from './AppDemo.jsx'
 
-// Use ?m365 URL param to switch to M365 SDK (streaming support)
+// URL param switches: ?m365 for M365 SDK, ?demo for demo mode
 const useM365 = window.location.search.includes('m365')
+const useDemo = window.location.search.includes('demo')
 
-// Disable StrictMode for M365 to prevent double connection
-const wrapper = useM365
-  ? <AppM365 />
-  : <StrictMode><App /></StrictMode>
+// Select app based on mode
+let app
+if (useDemo) {
+  // Demo mode - no real bot connection needed
+  app = <AppDemo />
+} else if (useM365) {
+  // M365 SDK mode - disable StrictMode to prevent double connection
+  app = <AppM365 />
+} else {
+  // Standard DirectLine mode
+  app = <StrictMode><App /></StrictMode>
+}
 
-createRoot(document.getElementById('root')).render(wrapper)
+createRoot(document.getElementById('root')).render(app)

@@ -302,6 +302,30 @@ body {
   opacity: 0.9;
 }
 
+.message__bubble table {
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+  font-size: 0.9em;
+  width: 100%;
+}
+
+.message__bubble th,
+.message__bubble td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.message__bubble th {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+}
+
+.message__bubble tr:last-child td {
+  border-bottom: none;
+}
+
 .message__bubble strong {
   font-weight: 600;
 }
@@ -448,6 +472,36 @@ body {
 @keyframes cursorBlink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
+}
+
+/* Suggested Actions */
+.suggested-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  align-self: flex-start;
+}
+
+.suggested-action {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.suggested-action:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.suggested-action:active {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 /* Scrollbar styling */
