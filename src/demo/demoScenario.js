@@ -168,13 +168,13 @@ export function setupUserMessageHandler(directLine) {
       await wait(1200);
 
       const streamingText =
-        'Our company offers flexible work arrangements[1], competitive benefits[2], and a supportive culture. Key policies include **unlimited PTO** (with manager approval), **remote work options**[1], and comprehensive health coverage[2]. For detailed information, please visit the HR portal or reach out to your HR representative.';
+        'Our company offers flexible work arrangements[1], competitive benefits[2], and a supportive culture. Key policies include **unlimited PTO** (with manager approval), **remote work options**[1], and comprehensive health coverage[2]. For detailed information, please visit the HR portal or reach out to your HR representative.\n\n[1]: https://example.com/handbook\n[2]: https://example.com/benefits';
 
       await streamText(streamingText, emitStreamChunk, emitFinalMessage);
 
       await wait(600);
       emitActivity({
-        text: 'Here are some additional resources that might help:\n\nThe **Employee Handbook**[1] covers all workplace policies, while the **Benefits Portal**[2] has details on health insurance, retirement plans, and wellness programs. For technical issues, contact **IT Support**[3].\n\nAnything else I can help with?',
+        text: 'Here are some additional resources that might help:\n\nThe **Employee Handbook**[1] covers all workplace policies, while the **Benefits Portal**[2] has details on health insurance, retirement plans, and wellness programs. For technical issues, contact **IT Support**[3].\n\nAnything else I can help with?\n\n[1]: https://example.com/handbook\n[2]: https://example.com/benefits\n[3]: https://example.com/support',
         entities: [
           {
             type: 'https://schema.org/Message',
