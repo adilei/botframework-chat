@@ -48,6 +48,22 @@ function ChatTranscript() {
         lastSuggestedActions = activity.suggestedActions.actions;
       }
 
+      // Extract citations from entities
+      // Copilot Studio sends citations inside a Message entity with a citation array
+      let citations = [];
+      const messageEntity = (activity.entities || [])
+        .find(e => e.type === 'https://schema.org/Message' && e.citation);
+      if (messageEntity?.citation) {
+        citations = messageEntity.citation
+          .filter(c => c.appearance?.url || c.appearance?.name)
+          .sort((a, b) => (a.position || 0) - (b.position || 0))
+          .map(c => ({
+            id: c['@id'],
+            name: c.appearance?.name,
+            url: c.appearance?.url,
+          }));
+      }
+
       // Final bot messages (streaming mode)
       if (activity.type === 'message' && streamType === 'final') {
         finalStreamIds.add(streamId);
@@ -58,6 +74,7 @@ function ChatTranscript() {
           timestamp: activity.timestamp,
           streamId: streamId,
           attachments: activity.attachments || [],
+          citations,
         });
       }
       // User messages (no streamType)
@@ -85,6 +102,7 @@ function ChatTranscript() {
           from: 'bot',
           timestamp: activity.timestamp,
           attachments: activity.attachments || [],
+          citations,
         });
       }
       // Streaming delta chunks (type: typing)
@@ -208,6 +226,24 @@ function ChatTranscript() {
                   attachments={msg.attachments}
                   activityId={msg.id}
                 />
+                {msg.citations && msg.citations.length > 0 && (
+                  <div className="message__citations">
+                    <div className="message__citations-title">Sources</div>
+                    <ol className="message__citations-list">
+                      {msg.citations.map((citation, index) => (
+                        <li key={citation.id || index}>
+                          {citation.url ? (
+                            <a href={citation.url} target="_blank" rel="noopener noreferrer">
+                              {citation.name || citation.url}
+                            </a>
+                          ) : (
+                            <span>{citation.name}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
               </div>
             </div>
           ))}

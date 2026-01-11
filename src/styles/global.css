@@ -350,6 +350,41 @@ body {
   text-decoration: underline;
 }
 
+/* Citation sources at bottom of message */
+.message__citations {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.85em;
+}
+
+.message__citations-title {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.message__citations-list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.message__citations-list li {
+  margin: 0.25rem 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.message__citations-list a {
+  color: #7dd3fc;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.message__citations-list a:hover {
+  text-decoration: underline;
+  color: #bae6fd;
+}
+
 /* SendBox */
 .sendbox-wrapper {
   padding: 0.75rem 2rem 1.25rem;
